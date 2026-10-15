@@ -57,6 +57,10 @@ window.Time = {
 	},
 
 	onDay() {
-		State.variables.daily = {};
+		const V = State.variables;
+		const e = setup.BALANCE.economy;
+		V.daily = {};
+		V.player.money -= e.dailyCost;
+		if (V.player.money < 0) Stats.change("stress", e.debtStress);
 	},
 };

@@ -1,5 +1,5 @@
 :: Encounter
-<h3><<= $enc.name>> (<<= $enc.round>>/<<= setup.ENC_MAX_ROUNDS>>)</h3>
+<h3><<= $enc.name>> (<<= $enc.round>>/<<= setup.BALANCE.encounter.maxRounds>>)</h3>
 <<for _line range $enc.log>>
 	<p><<= _line>></p>
 <</for>>
@@ -23,18 +23,22 @@
 :: Collapse
 정신을 잃었다.
 /* 게이지를 먼저 내려야 Time.pass 도중 Collapse가 다시 예약되지 않는다. */
-<<run Stats.set("pain", 20)>>
-<<run Stats.set("fatigue", 40)>>
-<<run Stats.change("trauma", 10)>>
-<<run Time.pass(360)>>
+<<set _b to setup.BALANCE.collapse>>
+<<run Stats.set("pain", _b.pain)>>
+<<run Stats.set("fatigue", _b.fatigue)>>
+<<run Stats.change("trauma", _b.trauma)>>
+<<set $record.collapses++>>
+<<run Time.pass(_b.minutes)>>
 눈을 뜨니 기숙사 침대다. 어떻게 돌아왔는지 기억나지 않는다.
 
 <<link "일어난다">><<set $returnTo to "Dorm">><<run Game.resume()>><</link>>
 
 :: Breakdown
 더는 버틸 수 없다. 주저앉아 한참을 떨었다.
-<<run Stats.set("stress", 60)>>
-<<run Stats.change("trauma", 50)>>
-<<run Stats.change("control", -100)>>
+<<set _b to setup.BALANCE.breakdown>>
+<<run Stats.set("stress", _b.stress)>>
+<<run Stats.change("trauma", _b.trauma)>>
+<<run Stats.change("control", _b.control)>>
+<<set $record.breakdowns++>>
 
 <<link "추스른다">><<run Game.resume()>><</link>>

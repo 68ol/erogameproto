@@ -21,6 +21,8 @@ window.Game = {
 		V.forcedPassage = null;
 		V.returnTo = null;
 		V.enc = null;
+		/* 누적 기록 (엔딩 조건, 밸런스 측정용) */
+		V.record = { encounters: {}, collapses: 0, breakdowns: 0 };
 	},
 
 	advance(minutes, target, { events = true } = {}) {

@@ -8,7 +8,7 @@
 <h3>기숙사 방</h3>
 좁지만 조용한 1인실이다.
 
-<<act "잔다" 480 "Dorm">><<run Stats.set("fatigue", 0)>><<run Stats.change("stress", -20)>><</act>>
+<<act "잔다" setup.BALANCE.sleep.minutes "Dorm">><<run Stats.sleep()>><</act>>
 <<act "샤워한다" 20 "Dorm">><<run Stats.change("stress", -5)>><<run Stats.change("arousal", -10)>><</act>>
 <<act "캠퍼스 광장으로" 10 "CampusPlaza">><</act>>
 
@@ -61,7 +61,14 @@
 <h3>카페</h3>
 <<if Time.between(10, 22)>>
 	<<if NPC.state("barista").met>>
-		<<act "알바를 한다" 240 "Cafe">><<set $player.money += 40000>><<run Stats.change("fatigue", 20)>><<run Stats.change("stress", 5)>><<run NPC.change("barista", "love", 2)>><</act>>
+		<<set _job to setup.BALANCE.jobs.cafe>>
+		<<if ($daily.cafeShifts || 0) gte _job.perDay>>
+			오늘 근무는 끝났다.
+		<<elseif Stats.get("fatigue") gte _job.maxFatigue>>
+			너무 피곤해서 일할 수 없다.
+		<<else>>
+			<<act "알바를 한다" _job.minutes "Cafe">><<set $player.money += _job.pay>><<set $daily.cafeShifts to ($daily.cafeShifts || 0) + 1>><<run Stats.change("fatigue", _job.fatigue)>><<run Stats.change("stress", _job.stress)>><<run NPC.change("barista", "love", 2)>><</act>>
+		<</if>>
 	<<else>>
 		<<act "알바 구인 공고를 묻는다" 10 "BaristaMeet">><</act>>
 	<</if>>

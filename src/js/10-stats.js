@@ -83,17 +83,31 @@ window.Stats = {
 		}
 	},
 
+	/* { stress: 5, trauma: -3 } 형태의 변화량을 한 번에 적용 */
+	apply(deltas) {
+		for (const [key, delta] of Object.entries(deltas)) Stats.change(key, delta);
+	},
+
 	/* 매시간 호출: short → long 누적, 자연 회복 */
 	hourlyTick() {
+		const b = setup.BALANCE.hourly;
 		const s = State.variables.player.stats;
-		if (s.stress >= 70) Stats.change("trauma", 2);
-		if (s.pain >= 50) Stats.change("trauma", 1);
-		if (s.trauma < 500) Stats.change("control", 2);
+		if (s.stress >= b.highStress) Stats.change("trauma", b.highStressTrauma);
+		if (s.pain >= b.highPain) Stats.change("trauma", b.highPainTrauma);
 		if (s.control <= 0) Stats.change("awareness", 1);
 
-		Stats.change("stress", -1);
-		Stats.change("pain", -5);
-		Stats.change("arousal", -5);
-		Stats.change("fatigue", 3);
+		Stats.change("stress", b.stressDecay);
+		Stats.change("pain", b.painDecay);
+		Stats.change("arousal", b.arousalDecay);
+		Stats.change("fatigue", b.fatigueGain);
+	},
+
+	sleep() {
+		const b = setup.BALANCE.sleep;
+		const calm = Stats.get("stress") < b.calmStress;
+		Stats.set("fatigue", 0);
+		Stats.change("stress", b.stress);
+		if (calm) Stats.change("trauma", b.traumaHeal);
+		if (Stats.get("trauma") < b.controlRecoverBelowTrauma) Stats.change("control", b.controlRecover);
 	},
 };

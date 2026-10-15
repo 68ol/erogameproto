@@ -17,6 +17,7 @@ Tweego는 처음 빌드할 때 `tools/`에 자동으로 받는다. SugarCube 2.3
 src/
   js/                 로직 (파일명 숫자 순서대로 로드)
     00-config.js      엔진 설정, 최소 나이(MIN_NPC_AGE = 20)
+    05-balance.js     밸런스 수치 전부. 조정은 여기서만
     10-stats.js       스탯 정의와 2단 구조(short → long), 판정, 기절/붕괴 예약
     20-time.js        게임 시간, 시/일 틱
     30-npc.js         네임드 NPC 정의(이름·성격은 여기서 수정), 랜덤 NPC 생성
@@ -25,7 +26,8 @@ src/
     60-game.js        이동 처리(Game.advance), <<act>> / <<encAction>> 매크로
   passages/           텍스트 (로직은 최소한으로)
   css/style.css
-docs/                 설계 문서
+scripts/balance-sim.mjs  밸런스 시뮬레이터 (docs/balance.md)
+docs/                 설계 문서, 기획서 양식(spec-template.md)
 ```
 
 ## 글 쓰는 규칙

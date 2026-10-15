@@ -9,9 +9,6 @@
  *
  * 장면 텍스트는 Encounter 패시지와 setup.ENC_TEXT 에서 작가가 채운다.
  */
-setup.ENC_MAX_ROUNDS = 8;
-setup.ENC_ROUND_MINUTES = 2;
-
 setup.ENC_ACTIONS = {
 	talk:   { label: "말로 설득한다" },
 	push:   { label: "밀쳐낸다" },
@@ -43,34 +40,35 @@ window.Encounter = {
 	act(action) {
 		const V = State.variables;
 		const enc = V.enc;
+		const b = setup.BALANCE.encounter;
 		enc.round++;
 		enc.log = [];
 
 		switch (action) {
 			case "talk":
-				if (Stats.check("social", enc.dom * 8)) {
-					enc.resolve -= 25;
+				if (Stats.check("social", enc.dom * b.talk.difficultyPerDom)) {
+					enc.resolve += b.talk.resolve;
 					Encounter.log("말이 먹혔다. 상대가 머뭇거린다.");
 				} else {
-					Stats.change("stress", 10);
+					Stats.change("stress", b.talk.failStress);
 					Encounter.log("상대는 듣는 척도 하지 않는다.");
 				}
 				break;
 			case "push":
-				if (Stats.check("athletics", enc.dom * 8)) {
-					enc.resolve -= 35;
+				if (Stats.check("athletics", enc.dom * b.push.difficultyPerDom)) {
+					enc.resolve += b.push.resolve;
 					Encounter.log("힘껏 밀쳐냈다. 상대가 비틀거린다.");
 				} else {
-					Stats.change("pain", 10);
+					Stats.change("pain", b.push.failPain);
 					Encounter.log("오히려 손목을 붙잡혔다.");
 				}
 				break;
 			case "flee":
-				if (Stats.check("athletics", enc.dom * 10)) {
+				if (Stats.check("athletics", enc.dom * b.flee.difficultyPerDom)) {
 					Encounter.finish("escape");
 					return;
 				}
-				Stats.change("fatigue", 5);
+				Stats.change("fatigue", b.flee.failFatigue);
 				Encounter.log("도망치려 했지만 길이 막혔다.");
 				break;
 			case "submit":
@@ -86,13 +84,13 @@ window.Encounter = {
 		}
 
 		Encounter.npcTurn();
-		Time.pass(setup.ENC_ROUND_MINUTES);
+		Time.pass(b.roundMinutes);
 
 		if (V.forcedPassage) {
 			Encounter.finish("collapse");
 			return;
 		}
-		if (enc.round >= setup.ENC_MAX_ROUNDS) {
+		if (enc.round >= b.maxRounds) {
 			Encounter.finish("lose");
 			return;
 		}
@@ -100,14 +98,13 @@ window.Encounter = {
 	},
 
 	npcTurn() {
+		const b = setup.BALANCE.encounter;
 		const enc = State.variables.enc;
 		if (random(1, 100) <= enc.dom) {
-			Stats.change("stress", 8);
-			Stats.change("pain", 5);
+			Stats.apply(b.npcAggressive);
 			Encounter.log(`${enc.name}이(가) 거칠게 다가온다.`);
 		} else {
-			Stats.change("stress", 4);
-			Stats.change("arousal", 5);
+			Stats.apply(b.npcSoft);
 			Encounter.log(`${enc.name}이(가) 낮은 목소리로 무언가 속삭인다.`);
 		}
 	},
@@ -117,21 +114,8 @@ window.Encounter = {
 		const enc = V.enc;
 		enc.result = result;
 
-		switch (result) {
-			case "escape":
-			case "win":
-				Stats.change("daring", 1);
-				Stats.change("stress", -10);
-				break;
-			case "submit":
-			case "lose":
-				Stats.change("trauma", 20);
-				Stats.change("control", -50);
-				Stats.change("submission", 1);
-				break;
-			case "collapse":
-				break;
-		}
+		Stats.apply(setup.BALANCE.encounter.result[result]);
+		V.record.encounters[result] = (V.record.encounters[result] || 0) + 1;
 
 		if (enc.npcId) {
 			NPC.change(enc.npcId, "dom", result === "win" ? -5 : 5);
