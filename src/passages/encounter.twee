@@ -1,0 +1,40 @@
+:: Encounter
+<h3><<= $enc.name>> (<<= $enc.round>>/<<= setup.ENC_MAX_ROUNDS>>)</h3>
+<<for _line range $enc.log>>
+	<p><<= _line>></p>
+<</for>>
+<div class="enc-meter">상대의 의지: <span class="bar"><span class="fill" @style="'width:' + Math.max(0, $enc.resolve) + '%'"></span></span></div>
+
+<<encAction "talk">>
+<<encAction "push">>
+<<encAction "flee">>
+<<encAction "submit">>
+
+:: EncounterEnd
+<<switch $enc.result>>
+	<<case "escape">>간신히 빠져나왔다.
+	<<case "win">><<= $enc.name>>이(가) 포기하고 물러난다.
+	<<case "submit" "lose">>(패배/수용 결과 텍스트 자리)
+	<<case "collapse">>시야가 흐려진다...
+<</switch>>
+
+<<link "계속">><<run Game.resume()>><</link>>
+
+:: Collapse
+정신을 잃었다.
+/* 게이지를 먼저 내려야 Time.pass 도중 Collapse가 다시 예약되지 않는다. */
+<<run Stats.set("pain", 20)>>
+<<run Stats.set("fatigue", 40)>>
+<<run Stats.change("trauma", 10)>>
+<<run Time.pass(360)>>
+눈을 뜨니 기숙사 침대다. 어떻게 돌아왔는지 기억나지 않는다.
+
+<<link "일어난다">><<set $returnTo to "Dorm">><<run Game.resume()>><</link>>
+
+:: Breakdown
+더는 버틸 수 없다. 주저앉아 한참을 떨었다.
+<<run Stats.set("stress", 60)>>
+<<run Stats.change("trauma", 50)>>
+<<run Stats.change("control", -100)>>
+
+<<link "추스른다">><<run Game.resume()>><</link>>

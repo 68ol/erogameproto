@@ -1,0 +1,20 @@
+/*
+	랜덤 이벤트 패시지. 발생 조건은 setup.EVENTS (src/js/40-events.js).
+	끝낼 때는 <<link>><<run Game.resume()>><</link>> 로 원래 가던 장소로 돌아간다.
+*/
+
+:: Event_NightStranger
+<<set _npc to NPC.generate()>>
+어둠 속에서 <<= _npc.name>>이(가) 길을 막아선다.
+
+<<link "상대한다">><<run Encounter.start({ npc: _npc, returnTo: $returnTo })>><</link>>
+<<if Stats.get("athletics") gte 200>>
+	<<link "곧장 뛰어서 지나친다">><<run Stats.change("fatigue", 10)>><<run Game.resume()>><</link>>
+<</if>>
+
+:: Event_MeetSenior
+<<run NPC.meet("senior")>>
+책장 사이에서 누군가 말을 건다. <<= NPC.def("senior").role>>, <<= NPC.name("senior")>>이다.
+(첫 만남 텍스트 자리)
+
+<<link "인사하고 자리로 간다">><<run NPC.change("senior", "love", 5)>><<run Game.resume()>><</link>>

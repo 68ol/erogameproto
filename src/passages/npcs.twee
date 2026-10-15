@@ -1,0 +1,28 @@
+/*
+	네임드 NPC 패시지. 이름/성격은 setup.NPC_DEFS (src/js/30-npc.js) 에서 바꾼다.
+	본문 텍스트는 전부 임시. <<= NPC.name("id")>> 로 이름을 출력하면 정의만 바꿔도 반영된다.
+*/
+
+:: SeniorTalk
+<h3><<= NPC.name("senior")>></h3>
+<<set _s to NPC.state("senior")>>
+<<if _s.love gte 40>>
+	(호감 높음 대사 자리)
+<<elseif _s.love gte 0>>
+	(보통 대사 자리)
+<<else>>
+	(냉담 대사 자리)
+<</if>>
+
+<<act "같이 공부한다" 60 "Library">><<run Stats.change("study", 4)>><<run NPC.change("senior", "love", 3)>><</act>>
+<<if Stats.get("daring") gte 10>>
+	<<act "저녁을 같이 먹자고 한다" 90 "Downtown">><<run NPC.change("senior", "love", 5)>><<run NPC.change("senior", "lust", 5)>><</act>>
+<</if>>
+<<act "그만 간다" 0 "Library">><</act>>
+
+:: BaristaMeet
+<<run NPC.meet("barista")>>
+<h3><<= NPC.name("barista")>></h3>
+(첫 만남 텍스트 자리. 시급과 근무 조건을 설명한다.)
+
+<<act "알바를 시작하기로 한다" 0 "Cafe">><</act>>

@@ -1,0 +1,16 @@
+:: Start
+<h2>erogameproto</h2>
+
+<p class="warning">이 게임은 성인용 콘텐츠를 포함합니다. 등장인물은 모두 20세 이상입니다.</p>
+
+이름: <<textbox "$player.name" "" autofocus>>
+
+<<link "시작한다" "Intro">>
+	<<if $player.name.trim() is "">><<set $player.name to "주인공">><</if>>
+<</link>>
+
+:: Intro
+<<= $player.name>>은(는) 올해 이 도시의 대학에 편입한 스물두 살 학생이다.
+기숙사 열쇠를 받고, 낯선 캠퍼스에서의 첫 아침이 밝았다.
+
+<<act "기숙사 방으로" 0 "Dorm">><</act>>

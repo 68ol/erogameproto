@@ -1,0 +1,34 @@
+:: StoryTitle
+erogameproto
+
+:: StoryData
+{
+	"ifid": "DDAB016C-4492-479A-81B8-6ACCD3B8B41C",
+	"format": "SugarCube",
+	"format-version": "2.37.3",
+	"start": "Start"
+}
+
+:: StoryInit
+<<run Game.newGame()>>
+
+:: StoryCaption
+<<include "SidebarStats">>
+
+:: SidebarStats [nobr]
+<div class="sb-time">
+	<<= Time.label()>>
+</div>
+<div class="sb-money">₩<<= $player.money.toLocaleString()>></div>
+<hr>
+<<for _key range setup.STAT_ORDER.short>>
+	<<set _def to setup.STATS[_key]>>
+	<div class="sb-bar">
+		<span class="sb-label"><<= _def.label>></span>
+		<span class="bar"><span class="fill" @style="'width:' + Stats.percent(_key) + '%'" @data-level="Stats.level(_key)"></span></span>
+	</div>
+<</for>>
+<hr>
+<<for _key range setup.STAT_ORDER.long>>
+	<div class="sb-row"><span><<= setup.STATS[_key].label>></span><span><<= Stats.get(_key)>></span></div>
+<</for>>

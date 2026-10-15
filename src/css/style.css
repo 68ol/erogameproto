@@ -1,0 +1,61 @@
+:root {
+	--bar-bg: #333;
+	--lv0: #4caf50;
+	--lv1: #8bc34a;
+	--lv2: #ffc107;
+	--lv3: #ff9800;
+	--lv4: #f44336;
+}
+
+body {
+	font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+}
+
+.warning {
+	color: #ff9800;
+}
+
+.act-link {
+	display: block;
+	margin: 0.3em 0;
+}
+
+.sb-time,
+.sb-money {
+	font-weight: bold;
+	margin-bottom: 0.3em;
+}
+
+.sb-bar,
+.sb-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5em;
+	font-size: 0.9em;
+	margin: 0.2em 0;
+}
+
+.bar {
+	display: inline-block;
+	width: 6em;
+	height: 0.6em;
+	background: var(--bar-bg);
+	border-radius: 3px;
+	overflow: hidden;
+}
+
+.bar .fill {
+	display: block;
+	height: 100%;
+	background: var(--lv0);
+}
+
+.bar .fill[data-level="1"] { background: var(--lv1); }
+.bar .fill[data-level="2"] { background: var(--lv2); }
+.bar .fill[data-level="3"] { background: var(--lv3); }
+.bar .fill[data-level="4"] { background: var(--lv4); }
+
+.enc-meter .bar .fill {
+	background: var(--lv4);
+}

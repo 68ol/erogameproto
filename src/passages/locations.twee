@@ -1,0 +1,71 @@
+/*
+	장소 패시지 규칙
+	- 태그 [location] 을 붙이면 들어올 때마다 랜덤 이벤트(setup.EVENTS)를 굴린다.
+	- 이동/행동은 전부 <<act "라벨" 분 "목적지">><</act>> 로 한다. (시간이 흐르고 틱이 돈다)
+*/
+
+:: Dorm [location]
+<h3>기숙사 방</h3>
+좁지만 조용한 1인실이다.
+
+<<act "잔다" 480 "Dorm">><<run Stats.set("fatigue", 0)>><<run Stats.change("stress", -20)>><</act>>
+<<act "샤워한다" 20 "Dorm">><<run Stats.change("stress", -5)>><<run Stats.change("arousal", -10)>><</act>>
+<<act "캠퍼스 광장으로" 10 "CampusPlaza">><</act>>
+
+:: CampusPlaza [location]
+<h3>캠퍼스 광장</h3>
+<<if Time.isNight>>
+	가로등 몇 개만 켜진 광장은 낮과 딴판으로 인적이 드물다.
+<<else>>
+	강의를 오가는 학생들로 북적인다.
+<</if>>
+
+<<act "기숙사로" 10 "Dorm">><</act>>
+<<act "강의동으로" 5 "LectureHall">><</act>>
+<<act "도서관으로" 5 "Library">><</act>>
+<<act "정문 밖 번화가로" 20 "Downtown">><</act>>
+
+:: LectureHall [location]
+<h3>강의동</h3>
+<<if !Time.isWeekend and Time.between(9, 18)>>
+	<<act "강의를 듣는다" 90 "LectureHall">><<run Stats.change("study", 5)>><<run Stats.change("fatigue", 5)>><</act>>
+<<else>>
+	강의실 문이 잠겨 있다.
+<</if>>
+<<act "광장으로" 5 "CampusPlaza">><</act>>
+
+:: Library [location]
+<h3>도서관</h3>
+<<if Time.between(8, 23)>>
+	<<act "공부한다" 60 "Library">><<run Stats.change("study", 3)>><<run Stats.change("stress", 2)>><</act>>
+	<<if NPC.state("senior").met>>
+		<<act "선배를 찾아본다" 10 "SeniorTalk">><</act>>
+	<</if>>
+<<else>>
+	폐관 시간이다.
+<</if>>
+<<act "광장으로" 5 "CampusPlaza">><</act>>
+
+:: Downtown [location]
+<h3>번화가</h3>
+<<if Time.isNight>>
+	술 취한 사람들과 네온사인. 골목 안쪽은 어둡다.
+<<else>>
+	상점과 카페가 늘어선 거리.
+<</if>>
+
+<<act "카페로" 5 "Cafe">><</act>>
+<<act "캠퍼스로 돌아간다" 20 "CampusPlaza">><</act>>
+
+:: Cafe [location]
+<h3>카페</h3>
+<<if Time.between(10, 22)>>
+	<<if NPC.state("barista").met>>
+		<<act "알바를 한다" 240 "Cafe">><<set $player.money += 40000>><<run Stats.change("fatigue", 20)>><<run Stats.change("stress", 5)>><<run NPC.change("barista", "love", 2)>><</act>>
+	<<else>>
+		<<act "알바 구인 공고를 묻는다" 10 "BaristaMeet">><</act>>
+	<</if>>
+<<else>>
+	영업이 끝났다.
+<</if>>
+<<act "거리로" 5 "Downtown">><</act>>
